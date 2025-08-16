@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Güneş App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ana Menü -->
+  <div id="menu">
+    <h1>🌞 Güneş App 🌞</h1>
+    <p id="countdown"></p>
+    <p id="gunun-notu"></p>
+    <button onclick="acLevelSecim()">Puzzle oynayalım mı Güzelimm 💛</button>
+  </div>
+
+  <!-- Level Seçim -->
+  <div id="level-secim" style="display:none;">
+    <h2>Level Seç</h2>
+    <div id="level-buttons"></div>
+    <button onclick="geriMenu()">⬅ Ana Menü</button>
+  </div>
+
+  <!-- Puzzle -->
+  <div id="puzzle" style="display:none;">
+    <h2 id="level-title"></h2>
+    <div id="board" class="board"></div>
+    <button onclick="geriLevelSecim()">⬅ Level Seç</button>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
