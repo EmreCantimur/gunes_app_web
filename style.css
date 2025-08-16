@@ -1,51 +1,49 @@
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background: url("arkaplan.jpg") no-repeat center center fixed;
-  background-size: cover;
-  color: white;
-  margin: 0;
-  padding: 0;
+:root{
+  --bg:#0b0c10; --fg:#fff; --muted:#cfd8e3; --accent:#ffd166;
+  --board: clamp(260px, 90vmin, 520px); /* min 260px, ekranın %90'ı, max 520px */
 }
 
-button {
-  margin: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
+/* Genel */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--fg)}
+body{
+  background:url("arkaplan.jpg") center/cover fixed no-repeat;
 }
+h1,h2{margin:16px 0}
+p{margin:8px 0}
 
-button:disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
+.screen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;gap:12px}
+.hidden{display:none}
 
-.board {
-  display: grid;
-  grid-template-columns: repeat(4, 80px);
-  grid-template-rows: repeat(4, 80px);
-  gap: 2px;
-  justify-content: center;
-  margin: 20px auto;
-}
+.primary{background:var(--accent);color:#222;border:none;padding:12px 18px;border-radius:12px;font-weight:700;cursor:pointer}
+.ghost{background:transparent;color:var(--muted);border:1px solid #3a4658;padding:10px 16px;border-radius:12px;cursor:pointer}
 
-.tile {
-  width: 80px;
-  height: 80px;
-  background-size: 320px 320px;
-  cursor: pointer;
+/* Level seçim ızgarası (tüm leveller görünsün) */
+.levels-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap:10px; width:min(92vw, 560px);
 }
+.levels-grid button{padding:10px;border-radius:12px;border:1px solid #3a4658;background:#121418;color:#fff;font-weight:700;cursor:pointer}
+.levels-grid button:disabled{opacity:.45;cursor:not-allowed}
 
-.empty {
-  background: black;
+/* Puzzle ekranı: siyah zemin, ortalanmış kare tahta */
+.puzzle-screen{background:#000}
+.board{
+  width:var(--board); height:var(--board);
+  margin:6px auto 14px; display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  grid-template-rows:repeat(4, 1fr);
+  gap:2px; background:#000;
 }
+.tile{
+  width:100%; height:100%;
+  background-size:var(--board) var(--board);
+  cursor:pointer;
+  border:1px solid #0e0e0e;
+}
+.tile.empty{background:#000; border:none; cursor:default}
 
-/* 🔑 Puzzle ekranı siyah arka plan */
-#puzzle {
-  background: black;
-  color: white;
-  min-height: 100vh;
-  padding-top: 20px;
-}
+/* Sayaç ve notlar mobilde okunabilir */
+#countdown{font-size:clamp(18px, 3.5vw, 28px); font-weight:800}
+#gunun-notu{font-size:clamp(14px, 3.2vw, 18px); color:var(--muted); max-width:90ch}
