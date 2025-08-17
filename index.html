@@ -1,32 +1,40 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Güneş App</title>
+  <meta charset="UTF-8" />
+  <title>Güneşimmm</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Ana Menü -->
   <div id="menu" class="screen">
-    <h1>🌞 Güneş App 🌞</h1>
+    <h1>🌞 Güneşimmm 🌞</h1>
     <p id="countdown"></p>
     <p id="gunun-notu"></p>
-    <button class="primary" onclick="acLevelSecim()">Puzzle oynayalım mı Güzelimm 💛</button>
+    <button class="primary" onclick="acLevelSecim()">Puzzle Oynayalım Mı Güzelimm 💛</button>
   </div>
 
   <!-- Level Seçim -->
   <div id="level-secim" class="screen hidden">
-    <h2>Level Seç</h2>
+    <h2>Level Seçebilirsin Birtanemmm</h2>
     <div id="level-buttons" class="levels-grid"></div>
-    <button class="ghost" onclick="geriMenu()">⬅ Ana Menü</button>
+    <button class="ghost" onclick="geriMenu()">⬅ Ana Menü Burada Prensesimm</button>
   </div>
 
   <!-- Puzzle -->
   <div id="puzzle" class="screen puzzle-screen hidden">
     <h2 id="level-title"></h2>
     <div id="board" class="board"></div>
-    <button class="ghost" onclick="geriLevelSecim()">⬅ Level Seç</button>
+
+    <!-- Kazanma Kutusu (Tam Görsel) -->
+    <div id="win-overlay" class="hidden win-box">
+      <p class="win-text">Eline Sağlık Bal Sevgilimm</p>
+      <img id="win-image" alt="Tamamlanan Görsel" />
+      <button class="primary" id="win-back">Level Seçimine Geçelim Mi Her Şeyim</button>
+    </div>
+
+    <button class="ghost" onclick="geriLevelSecim()">⬅ Level Seçim Ekranına Buradan Gidebilirsin Güzelimmm</button>
   </div>
 
   <script src="scripts.js"></script>
