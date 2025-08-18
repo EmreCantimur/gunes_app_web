@@ -34,7 +34,6 @@ setInterval(() => yukleNotlar(false), 60 * 1000);
 
 /* ===== Geri Sayım (opsiyonel) ===== */
 function geriSayim() {
-  // Örnek hedef: 2027-07-31 00:00:00 (istemiyorsan kaldır)
   const hedef = new Date("2027-07-31T00:00:00");
   const el = $("#countdown");
 
@@ -57,9 +56,13 @@ function geriSayim() {
 /* ===== Level Seçim / Kilit ===== */
 const totalLevels = 21; // levels/level1.jpg ... level21.jpg
 let maxLevel = parseInt(localStorage.getItem("maxLevel") || "1", 10);
+
 function setMaxLevel(v) {
-  maxLevel = v;
-  localStorage.setItem("maxLevel", String(v));
+  // sadece daha yüksek seviye açılır
+  if (v > maxLevel) {
+    maxLevel = v;
+    localStorage.setItem("maxLevel", String(v));
+  }
 }
 
 function acLevelSecim() {
@@ -167,8 +170,10 @@ function onTileClick(i) {
 }
 
 function showWin() {
-  // Bir sonraki leveli aç
-  if (maxLevel < totalLevels) setMaxLevel(maxLevel + 1);
+  // Yalnızca en yüksek açık seviyeyi bitirince bir sonrakini aç
+  if (level === maxLevel && maxLevel < totalLevels) {
+    setMaxLevel(maxLevel + 1);
+  }
 
   // Tam görseli göster
   const img = document.getElementById("win-image");
@@ -178,7 +183,6 @@ function showWin() {
 
   document.getElementById("win-overlay").classList.remove("hidden");
 
-  // Buton: level seçimine dön
   document.getElementById("win-back").onclick = () => {
     document.getElementById("win-overlay").classList.add("hidden");
     acLevelSecim();
