@@ -173,6 +173,9 @@ function showWin() {
   // Tam görseli göster
   const img = document.getElementById("win-image");
   img.src = `levels/level${level}.jpg`;
+  img.style.width = Math.min(window.innerWidth*0.9, 520) + 'px';
+  img.style.height = 'auto';
+
   document.getElementById("win-overlay").classList.remove("hidden");
 
   // Buton: level seçimine dön
@@ -197,3 +200,12 @@ window.addEventListener("resize", () => {
 /* ===== Başlat ===== */
 yukleNotlar(true);
 geriSayim();
+
+// Tamamlanan görseli, pencere yeniden boyutlanınca da uygun ölçüye getir
+window.addEventListener("resize", () => {
+  const winImg = document.getElementById("win-image");
+  const winOv = document.getElementById("win-overlay");
+  if (winImg && winOv && !winOv.classList.contains("hidden")) {
+    winImg.style.width = Math.min(window.innerWidth*0.9, 520) + "px";
+  }
+});
