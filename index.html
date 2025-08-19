@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Banner için ufak stil (style.css yoksa da dursun) */
+    /* Banner görünümü (style.css yoksa dahi çalışsın) */
     #ozel-gun-banner{
       background: rgba(255,204,0,.12);
       color: #fff;
@@ -15,6 +15,9 @@
       max-width: min(560px,92vw);
       text-align: center;
     }
+    ul.clean-list{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
+    .grid-form{width:min(560px,92vw); margin:0 auto 12px; display:grid; grid-template-columns:1fr 2fr auto; gap:8px}
   </style>
 </head>
 <body>
@@ -27,9 +30,9 @@
     <!-- Özel gün bildirimi (gün boyunca görünür) -->
     <div id="ozel-gun-banner" class="hidden"></div>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+    <div class="row">
       <button class="primary" onclick="acLevelSecim()">Puzzle Oynayalım Mı Güzelimm 💛</button>
-      <button class="primary" onclick="acOzelGunler()">Özel Günler 🌸</button>
+      <button class="primary" onclick="acOzelGunler()">Güzelimle Özel Günlerimiz 🌸</button>
     </div>
   </div>
 
@@ -42,15 +45,15 @@
 
   <!-- Özel Günler Ekranı (listeleme + ekleme) -->
   <div id="ozel-gunler" class="screen hidden">
-    <h2>🌹 Özel Günler 🌹</h2>
+    <h2>🌹 Güzelimle Özel Günlerimiz 🌹</h2>
 
-    <div style="width:min(560px,92vw); margin:0 auto 12px; display:grid; grid-template-columns:1fr 2fr auto; gap:8px;">
+    <div class="grid-form">
       <input id="ozel-date" type="date" />
       <input id="ozel-text" type="text" placeholder="Örn: Tanışma Yıldönümümüz 💖" />
       <button class="primary" id="ozel-ekle">Ekle</button>
     </div>
 
-    <ul id="ozel-gunler-list" style="width:min(560px,92vw); margin:0 auto; list-style:none; padding:0; display:flex; flex-direction:column; gap:8px;"></ul>
+    <ul id="ozel-gunler-list" class="clean-list"></ul>
 
     <button class="ghost" onclick="geriMenu()">⬅ Ana Menüye Dön</button>
   </div>
@@ -70,6 +73,7 @@
     <button class="ghost" onclick="geriLevelSecim()">⬅ Level Seçim Ekranına Buradan Gidebilirsin Güzelimmm</button>
   </div>
 
-  <script src="scripts.js"></script>
+  <!-- scripts.js ES module (Firebase importları içerir) -->
+  <script type="module" src="scripts.js"></script>
 </body>
 </html>
