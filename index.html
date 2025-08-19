@@ -5,6 +5,17 @@
   <title>Güneşimmm</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Banner için ufak stil (style.css yoksa da dursun) */
+    #ozel-gun-banner{
+      background: rgba(255,204,0,.12);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: min(560px,92vw);
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
   <!-- Ana Menü -->
@@ -12,7 +23,14 @@
     <h1>🌞 Güneşimmm 🌞</h1>
     <p id="countdown"></p>
     <p id="gunun-notu"></p>
-    <button class="primary" onclick="acLevelSecim()">Puzzle Oynayalım Mı Güzelimm 💛</button>
+
+    <!-- Özel gün bildirimi (gün boyunca görünür) -->
+    <div id="ozel-gun-banner" class="hidden"></div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+      <button class="primary" onclick="acLevelSecim()">Puzzle Oynayalım Mı Güzelimm 💛</button>
+      <button class="primary" onclick="acOzelGunler()">Özel Günler 🌸</button>
+    </div>
   </div>
 
   <!-- Level Seçim -->
@@ -20,6 +38,21 @@
     <h2>Level Seçebilirsin Birtanemmm</h2>
     <div id="level-buttons" class="levels-grid"></div>
     <button class="ghost" onclick="geriMenu()">⬅ Ana Menü Burada Prensesimm</button>
+  </div>
+
+  <!-- Özel Günler Ekranı (listeleme + ekleme) -->
+  <div id="ozel-gunler" class="screen hidden">
+    <h2>🌹 Özel Günler 🌹</h2>
+
+    <div style="width:min(560px,92vw); margin:0 auto 12px; display:grid; grid-template-columns:1fr 2fr auto; gap:8px;">
+      <input id="ozel-date" type="date" />
+      <input id="ozel-text" type="text" placeholder="Örn: Tanışma Yıldönümümüz 💖" />
+      <button class="primary" id="ozel-ekle">Ekle</button>
+    </div>
+
+    <ul id="ozel-gunler-list" style="width:min(560px,92vw); margin:0 auto; list-style:none; padding:0; display:flex; flex-direction:column; gap:8px;"></ul>
+
+    <button class="ghost" onclick="geriMenu()">⬅ Ana Menüye Dön</button>
   </div>
 
   <!-- Puzzle -->
