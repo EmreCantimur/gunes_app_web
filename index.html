@@ -6,28 +6,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Not alanı tasarımı */
-    #gunun-notu {
-      font-size: 1.2rem;
-      font-style: italic;
+    /* Banner görünümü (style.css yoksa dahi çalışsın) */
+    #ozel-gun-banner{
+      background: rgba(255,204,0,.12);
       color: #fff;
-      margin: 20px auto;
-      min-height: 30px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: min(560px,92vw);
       text-align: center;
-      max-width: 80%;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     }
-    .hidden { display: none !important; }
-    .row { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-top: 20px; }
+    ul.clean-list{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
+    .grid-form{width:min(560px,92vw); margin:0 auto 12px; display:grid; grid-template-columns:1fr 2fr auto; gap:8px}
   </style>
 </head>
 <body>
-
+  <!-- Ana Menü -->
   <div id="menu" class="screen">
     <h1>🌞 Güneşimmm 🌞</h1>
-    <p id="countdown" style="text-align: center; color: white;"></p>
-    
+    <p id="countdown"></p>
     <p id="gunun-notu"></p>
+
+    <!-- Özel gün bildirimi (gün boyunca görünür) -->
+    <div id="ozel-gun-banner" class="hidden"></div>
 
     <div class="row">
       <button class="primary" onclick="acLevelSecim()">Puzzle Oynayalım Mı Güzelimm 💛</button>
@@ -35,29 +36,44 @@
     </div>
   </div>
 
+  <!-- Level Seçim -->
   <div id="level-secim" class="screen hidden">
     <h2>Level Seçebilirsin Birtanemmm</h2>
     <div id="level-buttons" class="levels-grid"></div>
-    <button class="ghost" onclick="geriMenu()">⬅ Geri Dön</button>
+    <button class="ghost" onclick="geriMenu()">⬅ Ana Menü Burada Prensesimm</button>
   </div>
 
+  <!-- Özel Günler Ekranı (listeleme + ekleme) -->
   <div id="ozel-gunler" class="screen hidden">
-    <h2>🌹 Özel Günlerimiz 🌹</h2>
-    <p style="color: white; text-align: center;">Bu bölüm artık notlar klasöründeki dosyadan yönetilir.</p>
-    <button class="ghost" onclick="geriMenu()">⬅ Geri Dön</button>
+    <h2>🌹 Güzelimle Özel Günlerimiz 🌹</h2>
+
+    <div class="grid-form">
+      <input id="ozel-date" type="date" />
+      <input id="ozel-text" type="text" placeholder="Örn: Tanışma Yıldönümümüz 💖" />
+      <button class="primary" id="ozel-ekle">Ekle</button>
+    </div>
+
+    <ul id="ozel-gunler-list" class="clean-list"></ul>
+
+    <button class="ghost" onclick="geriMenu()">⬅ Ana Menüye Dön</button>
   </div>
 
-  <div id="puzzle" class="screen hidden">
+  <!-- Puzzle -->
+  <div id="puzzle" class="screen puzzle-screen hidden">
     <h2 id="level-title"></h2>
     <div id="board" class="board"></div>
+
+    <!-- Kazanma Kutusu (Tam Görsel) -->
     <div id="win-overlay" class="hidden win-box">
       <p class="win-text">Eline Sağlık Bal Sevgilimm</p>
-      <img id="win-image" alt="Tebrikler" />
-      <button class="primary" id="win-back">Level Seçimine Dön</button>
+      <img id="win-image" alt="Tamamlanan Görsel" />
+      <button class="primary" id="win-back">Level Seçimine Geçelim Mi Her Şeyim</button>
     </div>
-    <button class="ghost" onclick="geriLevelSecim()">⬅ Vazgeç</button>
+
+    <button class="ghost" onclick="geriLevelSecim()">⬅ Level Seçim Ekranına Buradan Gidebilirsin Güzelimmm</button>
   </div>
 
-  <script src="scripts.js"></script>
+  <!-- scripts.js ES module (Firebase importları içerir) -->
+  <script type="module" src="scripts.js"></script>
 </body>
 </html>
