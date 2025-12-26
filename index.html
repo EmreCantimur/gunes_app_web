@@ -6,34 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    #ozel-gun-banner {
-      background: rgba(255, 204, 0, 0.2);
-      color: #fff;
-      padding: 15px;
-      border-radius: 12px;
-      margin: 10px auto;
-      max-width: 90%;
-      text-align: center;
-      border: 1px solid #ffcc00;
-    }
+    /* Notun ekranda güzel görünmesi için küçük stil eklemesi */
     #gunun-notu {
+      font-size: 1.1rem;
       font-style: italic;
-      margin: 20px auto;
-      min-height: 24px;
       color: #fff;
-      font-weight: bold;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+      margin: 15px 0;
+      min-height: 24px;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+      font-weight: 500;
     }
     .hidden { display: none !important; }
-    .clean-list { list-style: none; padding: 0; margin: 20px 0; }
-    .grid-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
-
   <div id="menu" class="screen">
     <h1>🌞 Güneşimmm 🌞</h1>
-    <p id="countdown">Yükleniyor...</p>
+    <p id="countdown"></p>
     
     <p id="gunun-notu"></p>
 
@@ -52,13 +41,13 @@
   </div>
 
   <div id="ozel-gunler" class="screen hidden">
-    <h2>🌹 Özel Günlerimiz 🌹</h2>
-    <div class="grid-form">
+    <h2>🌹 Güzelimle Özel Günlerimiz 🌹</h2>
+    <div id="grid-form" style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;">
       <input id="ozel-date" type="date" />
-      <input id="ozel-text" type="text" placeholder="Açıklama gir..." />
+      <input id="ozel-text" type="text" placeholder="Bir açıklama yaz..." />
       <button class="primary" id="ozel-ekle">Ekle</button>
     </div>
-    <ul id="ozel-gunler-list" class="clean-list"></ul>
+    <ul id="ozel-gunler-list" style="list-style:none; padding:0;"></ul>
     <button class="ghost" onclick="geriMenu()">⬅ Geri Dön</button>
   </div>
 
@@ -67,7 +56,7 @@
     <div id="board" class="board"></div>
     <div id="win-overlay" class="hidden win-box">
       <p class="win-text">Eline Sağlık Bal Sevgilimm</p>
-      <img id="win-image" alt="Tebrikler" />
+      <img id="win-image" />
       <button class="primary" id="win-back">Level Seçimine Dön</button>
     </div>
     <button class="ghost" onclick="geriLevelSecim()">⬅ Vazgeç</button>
