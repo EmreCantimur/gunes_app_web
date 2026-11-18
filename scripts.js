@@ -1,27 +1,13 @@
-// scripts.js — Özel Günler (paylaşımlı Firestore) + Yıllık banner + Dinamik & Kilitsiz Puzzle
-// Bu dosya ES Module olarak çağrılır: <script type="module" src="scripts.js"></script>
+// scripts.js — Özel Günler (Firebase'siz Sabit + Yerel Kayıt) + Yıllık Banner + Dinamik & Kilitsiz Puzzle
+// Bu dosya ES Module veya normal script olarak çağrılabilir: <script type="module" src="scripts.js"></script>
 
-/* ======================= Firebase Kurulumu ======================= */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, deleteDoc, doc,
-  onSnapshot, query, orderBy, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-// 🔧 Senin Firebase config'in (storageBucket düzeltildi)
-const firebaseConfig = {
-  apiKey: "AIzaSyBw9zwUGLjMk16qKU6zkFz7IoWNSNGffss",
-  authDomain: "project-1371525806305179448.firebaseapp.com",
-  projectId: "project-1371525806305179448",
-  storageBucket: "project-1371525806305179448.appspot.com",
-  messagingSenderId: "697623565863",
-  appId: "1:697623565863:web:f852470fad4397c42f6002",
-  measurementId: "G-3JDB935SSD"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-const colOzelGunler = collection(db, "ozelGunler"); // {date:"YYYY-MM-DD", text:"...", createdAt:serverTimestamp()}
+/* ===================== Sabit Özel Günler Listesi ===================== */
+// Buraya eklediğin günler GitHub'a yüklediğinde hem sende hem karşı tarafta görünür.
+// Format: { date: "YYYY-MM-DD", text: "Açıklama" }
+const SABIT_OZEL_GUNLER = [
+  { date: "2024-01-29", text: "Tanışma Yıl Dönümümüz ❤️" },
+  { date: "2025-08-03", text: "Doğum Günün Kutlu Olsun Güzelim 🎂" }
+];
 
 /* ====================== Yardımcı / Seçiciler ===================== */
 const $ = (s) => document.querySelector(s);
@@ -54,7 +40,10 @@ async function yukleNotlar(force = false) {
     $("#gunun-notu").textContent = notlar[bugun] || "";
   } catch { /* notlar.json yoksa görmezden gel */ }
 }
-setInterval(() => yukleNotlar(false), 60 * 1000);
+setInterval(() => {
+  yukleNotlar(false);
+  checkBugunYillikOzelGun();
+}, 60 * 1000);
 
 /* ========================== Geri Sayım ========================== */
 function geriSayim() {
@@ -229,109 +218,136 @@ window.addEventListener("resize", () => {
   }
 });
 
-/* ======================= Özel Günler (Firestore) ======================= */
-/** Yapı:
- *  Collection: "ozelGunler"
- *  Doc: { date: "YYYY-MM-DD", text: "..." , createdAt: serverTimestamp() }
- */
-
+/* =================== Özel Günler (Firebase'siz) =================== */
+const LOCAL_OZEL_GUNLER_KEY = "ozelGunlerLocal";
 const ANNOUNCE_KEY = "lastAnniversaryAlert"; // gün içinde bir kez alert
 
-// Listeyi canlı dinle (herkes aynı veriyi anında görür)
-let unsubscribeList = null;
-function acOzelGunler() {
-  show("ozel-gunler");
-  if (unsubscribeList) unsubscribeList(); // yeniden bağlanmadan önce kapat
-  const q = query(colOzelGunler, orderBy("date", "asc"));
-  unsubscribeList = onSnapshot(q, snap => {
-    const ul = $("#ozel-gunler-list");
-    if (!ul) return;
-    ul.innerHTML = "";
-    if (snap.empty) {
-      ul.innerHTML = "<li>Henüz özel gün yok. 💛</li>";
-      return;
-    }
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.alignItems = "center";
-      li.style.justifyContent = "space-between";
-      li.style.gap = "8px";
+function getLocalOzelGunler() {
+  try {
+    const raw = localStorage.getItem(LOCAL_OZEL_GUNLER_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
-      const span = document.createElement("span");
-      span.textContent = `${data.date}: ${data.text}`;
-      li.appendChild(span);
+function saveLocalOzelGunler(list) {
+  localStorage.setItem(LOCAL_OZEL_GUNLER_KEY, JSON.stringify(list));
+}
 
+function getTumOzelGunler() {
+  const sabitler = SABIT_OZEL_GUNLER.map((item) => ({
+    date: item.date,
+    text: item.text,
+    sabit: true,
+    localIndex: -1
+  }));
+
+  const yereller = getLocalOzelGunler().map((item, idx) => ({
+    date: item.date,
+    text: item.text,
+    sabit: false,
+    localIndex: idx
+  }));
+
+  return [...sabitler, ...yereller].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function renderOzelGunlerList() {
+  const ul = $("#ozel-gunler-list");
+  if (!ul) return;
+
+  const tumGunler = getTumOzelGunler();
+  ul.innerHTML = "";
+
+  if (tumGunler.length === 0) {
+    ul.innerHTML = "<li>Henüz özel gün yok. 💛</li>";
+    return;
+  }
+
+  tumGunler.forEach((item) => {
+    const li = document.createElement("li");
+    li.style.display = "flex";
+    li.style.alignItems = "center";
+    li.style.justifyContent = "space-between";
+    li.style.gap = "8px";
+
+    const span = document.createElement("span");
+    span.textContent = `${item.date}: ${item.text}`;
+    li.appendChild(span);
+
+    if (!item.sabit) {
       const del = document.createElement("button");
       del.className = "ghost";
       del.textContent = "Sil";
-      del.onclick = async () => {
-        await deleteDoc(doc(colOzelGunler, docSnap.id));
+      del.onclick = () => {
+        const guncel = getLocalOzelGunler();
+        guncel.splice(item.localIndex, 1);
+        saveLocalOzelGunler(guncel);
+        renderOzelGunlerList();
+        checkBugunYillikOzelGun();
       };
       li.appendChild(del);
+    }
 
-      ul.appendChild(li);
-    });
+    ul.appendChild(li);
   });
 }
 
-// Ekleme
-async function kaydetOzelGun() {
+function acOzelGunler() {
+  show("ozel-gunler");
+  renderOzelGunlerList();
+}
+
+function kaydetOzelGun() {
   const d = $("#ozel-date").value; // YYYY-MM-DD
   const t = ($("#ozel-text").value || "").trim();
   if (!d || !t) return alert("Tarih ve açıklama gerekli.");
 
-  await addDoc(colOzelGunler, {
-    date: d,
-    text: t,
-    createdAt: serverTimestamp()
-  });
+  const mevcut = getLocalOzelGunler();
+  mevcut.push({ date: d, text: t });
+  saveLocalOzelGunler(mevcut);
 
   $("#ozel-date").value = "";
   $("#ozel-text").value = "";
+
+  renderOzelGunlerList();
+  checkBugunYillikOzelGun();
 }
 
-// Ana ekranda: yıl dönümü kontrolü (ay-gün eşleşmesi)
-function checkBugunYillikOzelGunRealtime() {
-  // Canlı dinleme: tarih bugünle ay-gün eşleşenler için banner + 1 kez alert
+// Ana ekranda: yıl dönümü / özel gün kontrolü (ay-gün eşleşmesi)
+function checkBugunYillikOzelGun() {
   const bugunYMD = getTRDateKey();
   const bugunMD  = getTRMonthDayKey();
 
-  const q = query(colOzelGunler, orderBy("date", "asc"));
-  onSnapshot(q, snap => {
-    const matches = [];
-    snap.forEach(docSnap => {
-      const { date, text } = docSnap.data();
-      if (typeof date === "string" && date.length === 10 && date.slice(5) === bugunMD) {
-        matches.push(text);
-      }
-    });
+  const matches = getTumOzelGunler()
+    .filter((item) => typeof item.date === "string" && item.date.length === 10 && item.date.slice(5) === bugunMD)
+    .map((item) => item.text);
 
-    const banner = $("#ozel-gun-banner");
-    if (!banner) return;
+  const banner = $("#ozel-gun-banner");
+  if (!banner) return;
 
-    banner.classList.add("hidden");
-    banner.textContent = "";
+  banner.classList.add("hidden");
+  banner.textContent = "";
 
-    if (matches.length > 0) {
-      const msg = matches.join(" • ");
-      banner.classList.remove("hidden");
-      banner.textContent = `🌸 Bugün özel gün: ${msg}`;
+  if (matches.length > 0) {
+    const msg = matches.join(" • ");
+    banner.classList.remove("hidden");
+    banner.textContent = `🌸 Bugün özel gün: ${msg}`;
 
-      const lastShown = localStorage.getItem(ANNOUNCE_KEY);
-      if (lastShown !== bugunYMD) {
-        alert(`🌸 Bugün özel gün: ${msg}`);
-        localStorage.setItem(ANNOUNCE_KEY, bugunYMD);
-      }
+    const lastShown = localStorage.getItem(ANNOUNCE_KEY);
+    if (lastShown !== bugunYMD) {
+      alert(`🌸 Bugün özel gün: ${msg}`);
+      localStorage.setItem(ANNOUNCE_KEY, bugunYMD);
     }
-  });
+  }
 }
 
 /* ============================ Başlat ============================ */
-yukleNotlar(true);      // varsa; yoksa sessiz geçer
+yukleNotlar(true);
 geriSayim();
-checkBugunYillikOzelGunRealtime();
+checkBugunYillikOzelGun();
 
 // Buton bağlama
 const ekleBtn = $("#ozel-ekle");
