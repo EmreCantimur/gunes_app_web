@@ -1,4 +1,4 @@
-// scripts.js — Özel Günler (paylaşımlı Firestore) + Yıllık banner + Puzzle
+// scripts.js — Özel Günler (paylaşımlı Firestore) + Yıllık banner + Dinamik & Kilitsiz Puzzle
 // Bu dosya ES Module olarak çağrılır: <script type="module" src="scripts.js"></script>
 
 /* ======================= Firebase Kurulumu ======================= */
@@ -82,17 +82,57 @@ function geriMenu() { show("menu"); }
 function acLevelSecim() { buildLevels(); show("level-secim"); }
 function geriLevelSecim() { acLevelSecim(); }
 
-/* =================== Level Seçim / Kilit Mantığı ================= */
-const totalLevels = 21; // levels/level1.jpg ... level21.jpg
-let maxLevel = parseInt(localStorage.getItem("maxLevel") || "1", 10);
-function setMaxLevel(v) { if (v > maxLevel) { maxLevel = v; localStorage.setItem("maxLevel", String(v)); } }
-function buildLevels() {
+/* ============== Dinamik Level Algılama & Kilitsiz Seçim ============== */
+let totalLevels = 0;
+
+function checkImageExists(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = `${url}?t=${Date.now()}`;
+  });
+}
+
+async function detectTotalLevels() {
+  let count = 0;
+  const batchSize = 10;
+
+  while (true) {
+    const checks = [];
+    for (let i = count + 1; i <= count + batchSize; i++) {
+      checks.push(checkImageExists(`levels/level${i}.jpg`));
+    }
+    const results = await Promise.all(checks);
+    const firstMissing = results.indexOf(false);
+    if (firstMissing === -1) {
+      count += batchSize;
+    } else {
+      count += firstMissing;
+      break;
+    }
+  }
+
+  totalLevels = count;
+  return totalLevels;
+}
+
+async function buildLevels() {
   const c = $("#level-buttons");
+  c.innerHTML = "<p>Bölümler yükleniyor...</p>";
+
+  const count = await detectTotalLevels();
   c.innerHTML = "";
-  for (let i = 1; i <= totalLevels; i++) {
+
+  if (count === 0) {
+    c.innerHTML = "<p>Henüz bölüm fotoğrafı bulunamadı.</p>";
+    return;
+  }
+
+  for (let i = 1; i <= count; i++) {
     const b = document.createElement("button");
-    b.textContent = i <= maxLevel ? `Level ${i}` : `Level ${i} 🔒`;
-    if (i <= maxLevel) b.onclick = () => startPuzzle(i); else b.disabled = true;
+    b.textContent = `Level ${i}`;
+    b.onclick = () => startPuzzle(i);
     c.appendChild(b);
   }
 }
@@ -165,7 +205,6 @@ function onTileClick(i) {
   if (checkWin()) showWin();
 }
 function showWin() {
-  if (level === maxLevel && maxLevel < totalLevels) setMaxLevel(maxLevel + 1);
   const img = document.getElementById("win-image");
   if (img) {
     img.src = `levels/level${level}.jpg`;
